@@ -1,6 +1,6 @@
 # ── Core CV & AI ──────────────────────────────────────────────────────────────
 ultralytics>=8.0.0
-opencv-python-headless>=4.8.0
+opencv-python-headless==4.10.0.84
 numpy>=1.24.0
 Pillow>=10.0.0
 torch>=2.0.0
