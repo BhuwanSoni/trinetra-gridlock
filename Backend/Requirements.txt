@@ -22,4 +22,4 @@ pandas>=2.0.0
 # ── API Layer (new) ────────────────────────────────────────────────────────────
 fastapi>=0.110.0
 uvicorn[standard]>=0.29.0
-python-multipart>=0.0.9     # required for FastAPI file uploads
+python-multipart>=0.0.9     
