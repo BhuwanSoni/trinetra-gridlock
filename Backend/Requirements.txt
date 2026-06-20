@@ -1,5 +1,5 @@
 # ── Core CV & AI ──────────────────────────────────────────────────────────────
-ultralytics>=8.0.0          # YOLOv8/v11 models
+ultralytics>=8.0.0
 opencv-python-headless>=4.8.0
 numpy>=1.24.0
 Pillow>=10.0.0
