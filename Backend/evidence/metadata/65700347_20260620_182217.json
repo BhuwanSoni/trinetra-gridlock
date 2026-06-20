@@ -1,0 +1,35 @@
+{
+  "record_id": "65700347",
+  "timestamp": "2026-06-20T18:22:17.588784",
+  "camera_id": "CAM-01",
+  "location": "Unknown",
+  "track_id": -1,
+  "plate_number": "711",
+  "image_path": "evidence\\images\\65700347_20260620_182217_full.jpg",
+  "vehicle_crop": "evidence\\images\\65700347_20260620_182217_vehicle.jpg",
+  "plate_crop": "evidence\\images\\65700347_20260620_182217_plate.jpg",
+  "violations": [
+    {
+      "violation_type": "Helmet Violation",
+      "severity": "Medium",
+      "risk_score": 70,
+      "fine_amount": 1000,
+      "confidence": 0.634,
+      "plate_number": "711",
+      "track_id": -1,
+      "review_status": "MANUAL_REVIEW",
+      "needs_manual_review": true,
+      "details": {
+        "detected": "no_helmet",
+        "model_conf": 0.665,
+        "review_status": "MANUAL_REVIEW",
+        "challan_threshold": 0.83,
+        "unknown_plate": false
+      }
+    }
+  ],
+  "total_fine": 1000,
+  "combined_risk": 19.5,
+  "top_severity": "Low",
+  "status": "pending_review"
+}

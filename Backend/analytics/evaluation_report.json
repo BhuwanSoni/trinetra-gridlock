@@ -1,0 +1,52 @@
+{
+  "module_accuracy": {},
+  "ocr_comparison": {},
+  "preprocessing_ablation": {},
+  "latency": {
+    "01_preprocess": {
+      "mean_ms": 28.0,
+      "min_ms": 27.5,
+      "max_ms": 29.0,
+      "p95_ms": 29.0
+    },
+    "02_scene_detect": {
+      "mean_ms": 10.1,
+      "min_ms": 9.6,
+      "max_ms": 10.8,
+      "p95_ms": 10.8
+    },
+    "03_signal_agent": {
+      "mean_ms": 20.3,
+      "min_ms": 18.5,
+      "max_ms": 22.6,
+      "p95_ms": 22.6
+    },
+    "04_parking_agent": {
+      "mean_ms": 9.6,
+      "min_ms": 9.5,
+      "max_ms": 9.7,
+      "p95_ms": 9.7
+    },
+    "05_end_to_end": {
+      "mean_ms": 68.2,
+      "min_ms": 66.3,
+      "max_ms": 71.0,
+      "p95_ms": 71.0
+    },
+    "fps_estimate": 14.7,
+    "device": {
+      "platform": "Windows-10-10.0.26200-SP0",
+      "cpu": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+      "cuda": true,
+      "gpu_name": "NVIDIA GeForce RTX 3050"
+    }
+  },
+  "end_to_end": {
+    "total_images": 0,
+    "correct": 0,
+    "accuracy": 0.0,
+    "by_category": {},
+    "errors": []
+  },
+  "generated_at": "2026-06-19T01:55:28.315748"
+}

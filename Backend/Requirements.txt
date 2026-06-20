@@ -1,0 +1,25 @@
+# ── Core CV & AI ──────────────────────────────────────────────────────────────
+ultralytics>=8.0.0          # YOLOv8/v11 models
+opencv-python>=4.8.0
+numpy>=1.24.0
+Pillow>=10.0.0
+torch>=2.0.0
+torchvision>=0.15.0
+
+# ── OCR (PaddleOCR primary, EasyOCR fallback) ─────────────────────────────────
+paddlepaddle>=2.5.0         # CPU build; use paddlepaddle-gpu for CUDA
+paddleocr>=2.7.0            # 85-95% accuracy on Indian plates
+easyocr>=1.7.0              # automatic fallback if PaddleOCR unavailable
+
+# ── Improvement #1: Vehicle Tracking ──────────────────────────────────────────
+deep-sort-realtime>=1.3.2
+
+# ── Improvement #9: Analytics Dashboard ───────────────────────────────────────
+streamlit>=1.32.0
+plotly>=5.18.0
+pandas>=2.0.0
+
+# ── API Layer (new) ────────────────────────────────────────────────────────────
+fastapi>=0.110.0
+uvicorn[standard]>=0.29.0
+python-multipart>=0.0.9     # required for FastAPI file uploads

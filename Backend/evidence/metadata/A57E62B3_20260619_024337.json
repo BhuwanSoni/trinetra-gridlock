@@ -1,0 +1,30 @@
+{
+  "record_id": "A57E62B3",
+  "timestamp": "2026-06-19T02:43:37.922626",
+  "camera_id": "CAM-01",
+  "location": "Unknown",
+  "track_id": -1,
+  "plate_number": "UNKNOWN",
+  "image_path": "evidence\\images\\A57E62B3_20260619_024337_full.jpg",
+  "vehicle_crop": "evidence\\images\\A57E62B3_20260619_024337_vehicle.jpg",
+  "plate_crop": "",
+  "violations": [
+    {
+      "violation_type": "Mobile Usage While Driving",
+      "severity": "High",
+      "risk_score": 78,
+      "fine_amount": 5000,
+      "confidence": 0.52,
+      "plate_number": "UNKNOWN",
+      "track_id": -1,
+      "details": {
+        "detected": "phone",
+        "model_conf": 0.481
+      }
+    }
+  ],
+  "total_fine": 5000,
+  "combined_risk": 78,
+  "top_severity": "High",
+  "status": "pending_review"
+}

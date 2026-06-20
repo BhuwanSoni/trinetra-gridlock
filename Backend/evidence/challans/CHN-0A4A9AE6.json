@@ -1,0 +1,35 @@
+{
+  "challan_id": "CHN-0A4A9AE6",
+  "issued_at": "2026-06-20T05:33:29.517213",
+  "plate_number": "UNKNOWN",
+  "location": "Unknown",
+  "camera_id": "CAM-01",
+  "violations": [
+    {
+      "violation_type": "Mobile Usage While Driving",
+      "severity": "High",
+      "risk_score": 78,
+      "fine_amount": 5000,
+      "confidence": 0.691,
+      "plate_number": "UNKNOWN",
+      "track_id": -1,
+      "review_status": "MANUAL_REVIEW",
+      "needs_manual_review": true,
+      "details": {
+        "detected": "phone",
+        "model_conf": 0.725,
+        "review_status": "MANUAL_REVIEW",
+        "challan_threshold": 0.92,
+        "unknown_plate": true
+      }
+    }
+  ],
+  "total_fine_inr": 5000,
+  "combined_risk": 33.9,
+  "top_severity": "Low",
+  "evidence_image": "evidence\\images\\0A4A9AE6_20260620_053328_full.jpg",
+  "vehicle_crop": "evidence\\images\\0A4A9AE6_20260620_053328_vehicle.jpg",
+  "plate_crop": "",
+  "payment_due": "30 days from issue date",
+  "status": "issued"
+}

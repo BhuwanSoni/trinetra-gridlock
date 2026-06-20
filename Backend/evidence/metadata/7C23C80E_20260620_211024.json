@@ -1,0 +1,107 @@
+{
+  "record_id": "7C23C80E",
+  "timestamp": "2026-06-20T21:10:24.452886",
+  "camera_id": "CAM-01",
+  "location": "Dashboard",
+  "track_id": -1,
+  "plate_number": "UNKNOWN",
+  "image_path": "evidence\\images\\7C23C80E_20260620_211024_full.jpg",
+  "vehicle_crop": "evidence\\images\\7C23C80E_20260620_211024_vehicle.jpg",
+  "plate_crop": "",
+  "violations": [
+    {
+      "violation_type": "Mobile Usage While Driving",
+      "severity": "High",
+      "risk_score": 78,
+      "fine_amount": 5000,
+      "confidence": 0.553,
+      "plate_number": "UNKNOWN",
+      "track_id": -1,
+      "review_status": "MANUAL_REVIEW",
+      "needs_manual_review": true,
+      "details": {
+        "detected": "phone",
+        "model_conf": 0.494,
+        "review_status": "MANUAL_REVIEW",
+        "challan_threshold": 0.92,
+        "unknown_plate": true
+      }
+    },
+    {
+      "violation_type": "Mobile Usage While Driving",
+      "severity": "High",
+      "risk_score": 78,
+      "fine_amount": 5000,
+      "confidence": 0.511,
+      "plate_number": "UNKNOWN",
+      "track_id": -1,
+      "review_status": "MANUAL_REVIEW",
+      "needs_manual_review": true,
+      "details": {
+        "detected": "phone",
+        "model_conf": 0.557,
+        "review_status": "MANUAL_REVIEW",
+        "challan_threshold": 0.92,
+        "unknown_plate": true
+      }
+    },
+    {
+      "violation_type": "Mobile Usage While Driving",
+      "severity": "High",
+      "risk_score": 78,
+      "fine_amount": 5000,
+      "confidence": 0.615,
+      "plate_number": "UNKNOWN",
+      "track_id": -1,
+      "review_status": "MANUAL_REVIEW",
+      "needs_manual_review": true,
+      "details": {
+        "detected": "phone",
+        "model_conf": 0.723,
+        "review_status": "MANUAL_REVIEW",
+        "challan_threshold": 0.92,
+        "unknown_plate": true
+      }
+    },
+    {
+      "violation_type": "Mobile Usage While Driving",
+      "severity": "High",
+      "risk_score": 78,
+      "fine_amount": 5000,
+      "confidence": 0.48,
+      "plate_number": "UNKNOWN",
+      "track_id": -1,
+      "review_status": "MANUAL_REVIEW",
+      "needs_manual_review": true,
+      "details": {
+        "detected": "phone",
+        "model_conf": 0.555,
+        "review_status": "MANUAL_REVIEW",
+        "challan_threshold": 0.92,
+        "unknown_plate": true
+      }
+    },
+    {
+      "violation_type": "Mobile Usage While Driving",
+      "severity": "High",
+      "risk_score": 78,
+      "fine_amount": 5000,
+      "confidence": 0.518,
+      "plate_number": "UNKNOWN",
+      "track_id": -1,
+      "review_status": "MANUAL_REVIEW",
+      "needs_manual_review": true,
+      "details": {
+        "detected": "phone",
+        "model_conf": 0.539,
+        "review_status": "MANUAL_REVIEW",
+        "challan_threshold": 0.92,
+        "unknown_plate": true
+      }
+    }
+  ],
+  "total_fine": 25000,
+  "combined_risk": 78.5,
+  "top_severity": "High",
+  "status": "pending_review"
+}

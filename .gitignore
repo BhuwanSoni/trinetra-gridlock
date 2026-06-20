@@ -1,0 +1,16 @@
+# Firebase Admin SDK Keys
+Backend/firebase/*.json
+
+# Environment files
+.env
+.env.local
+
+# Python
+__pycache__/
+*.pyc
+
+# Node
+node_modules/
+
+# YOLO outputs
+runs/

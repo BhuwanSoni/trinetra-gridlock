@@ -1,0 +1,33 @@
+{
+  "challan_id": "CHN-B403A2C2",
+  "issued_at": "2026-06-20T01:23:11.459121",
+  "plate_number": "UNKNOWN",
+  "location": "Unknown",
+  "camera_id": "CAM-01",
+  "violations": [
+    {
+      "violation_type": "Mobile Usage While Driving",
+      "severity": "High",
+      "risk_score": 78,
+      "fine_amount": 5000,
+      "confidence": 0.658,
+      "plate_number": "UNKNOWN",
+      "track_id": -1,
+      "details": {
+        "detected": "phone",
+        "model_conf": 0.706
+      }
+    }
+  ],
+  "total_fine_inr": 5000,
+  "combined_risk": 34.6,
+  "top_severity": "Low",
+  "evidence_image": "evidence\\images\\B403A2C2_20260620_012311_full.jpg",
+  "vehicle_crop": "evidence\\images\\B403A2C2_20260620_012311_vehicle.jpg",
+  "plate_crop": "",
+  "payment_due": "30 days from issue date",
+  "status": "issued",
+  "review_status": "REJECTED",
+  "review_notes": "",
+  "reviewed_at": "2026-06-20T02:48:16.767625"
+}

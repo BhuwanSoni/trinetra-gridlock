@@ -1,0 +1,74 @@
+{
+  "challan_id": "CHN-AA35A790",
+  "issued_at": "2026-06-20T18:33:58.191654",
+  "plate_number": "UNKNOWN",
+  "location": "Unknown",
+  "camera_id": "CAM-01",
+  "violations": [
+    {
+      "violation_type": "Helmet Violation",
+      "severity": "Medium",
+      "risk_score": 70,
+      "fine_amount": 1000,
+      "confidence": 0.617,
+      "plate_number": "UNKNOWN",
+      "track_id": -1,
+      "review_status": "MANUAL_REVIEW",
+      "needs_manual_review": true,
+      "details": {
+        "detected": "no_helmet",
+        "model_conf": 0.654,
+        "review_status": "MANUAL_REVIEW",
+        "challan_threshold": 0.83,
+        "unknown_plate": true
+      }
+    },
+    {
+      "violation_type": "Triple Riding",
+      "severity": "High",
+      "risk_score": 85,
+      "fine_amount": 1000,
+      "confidence": 0.746,
+      "plate_number": "UNKNOWN",
+      "track_id": -1,
+      "review_status": "MANUAL_REVIEW",
+      "needs_manual_review": true,
+      "details": {
+        "detected": "triple_rider",
+        "model_conf": 0.907,
+        "review_status": "MANUAL_REVIEW",
+        "challan_threshold": 0.88,
+        "unknown_plate": true
+      }
+    },
+    {
+      "violation_type": "Triple Riding",
+      "severity": "High",
+      "risk_score": 85,
+      "fine_amount": 1000,
+      "confidence": 0.715,
+      "plate_number": "UNKNOWN",
+      "track_id": -1,
+      "review_status": "MANUAL_REVIEW",
+      "needs_manual_review": true,
+      "details": {
+        "detected": "triple_rider",
+        "model_conf": 0.898,
+        "review_status": "MANUAL_REVIEW",
+        "challan_threshold": 0.88,
+        "unknown_plate": true
+      }
+    }
+  ],
+  "total_fine_inr": 3000,
+  "combined_risk": 52.5,
+  "top_severity": "Medium",
+  "evidence_image": "evidence\\images\\AA35A790_20260620_183358_full.jpg",
+  "vehicle_crop": "evidence\\images\\AA35A790_20260620_183358_vehicle.jpg",
+  "plate_crop": "",
+  "payment_due": "30 days from issue date",
+  "status": "issued",
+  "review_status": "AUTO_APPROVED",
+  "review_notes": "",
+  "reviewed_at": "2026-06-20T21:09:38.451505"
+}

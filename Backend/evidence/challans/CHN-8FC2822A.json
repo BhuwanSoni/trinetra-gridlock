@@ -1,0 +1,41 @@
+{
+  "challan_id": "CHN-8FC2822A",
+  "issued_at": "2026-06-20T23:22:42.017682",
+  "plate_number": "UNKNOWN",
+  "location": "Dashboard",
+  "camera_id": "CAM-01",
+  "violations": [
+    {
+      "violation_type": "Helmet Violation",
+      "severity": "Medium",
+      "risk_score": 70,
+      "fine_amount": 1000,
+      "confidence": 0.781,
+      "plate_number": "UNKNOWN",
+      "track_id": -1,
+      "review_status": "MANUAL_REVIEW",
+      "needs_manual_review": true,
+      "details": {
+        "detected": "no_helmet",
+        "model_conf": 0.737,
+        "review_status": "MANUAL_REVIEW",
+        "challan_threshold": 0.83,
+        "unknown_plate": true
+      }
+    }
+  ],
+  "total_fine_inr": 1000,
+  "combined_risk": 33.4,
+  "top_severity": "Low",
+  "evidence_image": "evidence\\images\\8FC2822A_20260620_232231_full.jpg",
+  "vehicle_crop": "evidence\\images\\8FC2822A_20260620_232231_vehicle.jpg",
+  "plate_crop": "evidence\\images\\8FC2822A_20260620_232231_plate.jpg",
+  "full_url": "https://storage.googleapis.com/hmates-d052b.firebasestorage.app/evidence/full/8FC2822A_20260620_232231_full.jpg",
+  "vehicle_url": "https://storage.googleapis.com/hmates-d052b.firebasestorage.app/evidence/vehicle/8FC2822A_20260620_232231_vehicle.jpg",
+  "plate_url": "https://storage.googleapis.com/hmates-d052b.firebasestorage.app/evidence/plate/8FC2822A_20260620_232231_plate.jpg",
+  "payment_due": "30 days from issue date",
+  "status": "issued",
+  "review_status": "AUTO_APPROVED",
+  "review_notes": "",
+  "reviewed_at": "2026-06-20T23:26:37.840649"
+}
