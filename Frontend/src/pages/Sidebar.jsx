@@ -12,7 +12,7 @@ const navItems = [
   { id: 'review',         label: 'Review Queue',      icon: ClipboardCheck, badge: 41 },
   { id: 'analytics',      label: 'Analytics',         icon: BarChart3 },
   { id: 'reports',        label: 'Reports',           icon: FileText },
-  { id: 'evidence', label: 'Evidence Locker', icon: Archive },,
+  { id: 'evidence', label: 'Evidence Locker', icon: Archive },
 ];
  
 export default function Sidebar({ active, onNavigate }) {
