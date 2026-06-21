@@ -1,2 +1,8 @@
 [phases.setup]
-nixPkgs = ["glib", "mesa"]
+nixPkgs = [
+"glib",
+"mesa",
+"libGL",
+"gcc",
+"gnumake"
+]
