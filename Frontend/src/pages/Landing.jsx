@@ -22,24 +22,6 @@ const dataset = [
  
 const classes = ['Helmet', 'No Helmet', 'Seatbelt', 'Phone Usage', 'Triple Riding', 'Red Light', 'Illegal Parking', 'License Plate'];
 
-const detectionMetrics = [
-  { label: 'Precision',  value: '98.27%' },
-  { label: 'Recall',     value: '94.70%' },
-  { label: 'F1 Score',   value: '96.45%' },
-  { label: 'mAP@50',     value: '99.00%' },
-];
-
-const classificationMetrics = [
-  { label: 'Helmet / Seatbelt / Phone — Top-1 Accuracy', value: '99.63% – 100%' },
-];
-
-const computeSpecs = [
-  { label: 'GPU',            value: 'RTX 3050 6GB' },
-  { label: 'Framework',      value: 'YOLOv11 + PaddleOCR' },
-  { label: 'Avg Processing', value: '< 1 sec / image' },
-  { label: 'Pipeline',       value: 'Real-Time Detection' },
-];
-
 const team = [
   { name: 'Bhuwan Soni', role: 'Model Configuration/ ML ops' },
   { name: 'Kanchi Soni', role: 'Model Training' },
@@ -155,57 +137,6 @@ export default function Landing({ onNavigate }) {
             ))}
           </div>
         </div>
-      </div>
- 
-      <hr style={S.rule} />
-
-      {/* Performance Evaluation — best-run metrics only (see model training logs) */}
-      <div style={{ marginBottom: 36 }}>
-        <div style={S.eyebrow}>Performance Evaluation</div>
-
-        <div style={{ fontSize: 11.5, fontWeight: 600, color: color.muted, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.07em' }}>
-          Detection Performance
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 16 }}>
-          {detectionMetrics.map(m => (
-            <div key={m.label} style={{ ...S.card, padding: '14px 12px' }}>
-              <div style={{ fontFamily: font.display, fontSize: 22, fontWeight: 700, color: color.ink }}>{m.value}</div>
-              <div style={{ fontSize: 11, color: color.muted, marginTop: 3 }}>{m.label}</div>
-            </div>
-          ))}
-        </div>
-
-        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-          <div style={{ ...S.card, padding: '14px 18px', flex: '1 1 280px' }}>
-            <div style={{ fontSize: 11.5, fontWeight: 600, color: color.muted, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.07em' }}>
-              Classification Performance
-            </div>
-            {classificationMetrics.map(m => (
-              <div key={m.label} style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
-                <div style={{ fontFamily: font.display, fontSize: 22, fontWeight: 700, color: color.ink }}>{m.value}</div>
-                <div style={{ fontSize: 11, color: color.muted }}>{m.label}</div>
-              </div>
-            ))}
-          </div>
-
-          <div style={{ ...S.card, padding: '14px 18px', flex: '1 1 280px' }}>
-            <div style={{ fontSize: 11.5, fontWeight: 600, color: color.muted, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.07em' }}>
-              Computational Efficiency
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', rowGap: 6, columnGap: 12 }}>
-              {computeSpecs.map(c => (
-                <div key={c.label} style={{ fontSize: 12, color: color.text }}>
-                  <span style={{ color: color.muted }}>{c.label}: </span>{c.value}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <p style={{ fontSize: 11.5, color: color.muted, marginTop: 10 }}>
-          Best-performing validation run shown per model type — full training logs cover five detection
-          runs and two classification runs.
-        </p>
       </div>
  
       <hr style={S.rule} />

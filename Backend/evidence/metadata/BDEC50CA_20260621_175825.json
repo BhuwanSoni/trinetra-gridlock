@@ -1,0 +1,38 @@
+{
+  "record_id": "BDEC50CA",
+  "timestamp": "2026-06-21T17:58:25.797506",
+  "camera_id": "CAM-01",
+  "location": "Dashboard",
+  "track_id": -1,
+  "plate_number": "UNKNOWN",
+  "image_path": "evidence\\images\\BDEC50CA_20260621_175825_full.jpg",
+  "vehicle_crop": "evidence\\images\\BDEC50CA_20260621_175825_vehicle.jpg",
+  "plate_crop": "evidence\\images\\BDEC50CA_20260621_175825_plate.jpg",
+  "violations": [
+    {
+      "violation_type": "Seat Belt Violation",
+      "severity": "Medium",
+      "risk_score": 65,
+      "fine_amount": 1000,
+      "confidence": 0.785,
+      "plate_number": "UNKNOWN",
+      "track_id": -1,
+      "review_status": "MANUAL_REVIEW",
+      "needs_manual_review": true,
+      "details": {
+        "detected": "no_seatbelt",
+        "model_conf": 1.0,
+        "review_status": "MANUAL_REVIEW",
+        "challan_threshold": 0.85,
+        "unknown_plate": true
+      }
+    }
+  ],
+  "total_fine": 1000,
+  "combined_risk": 18.3,
+  "top_severity": "Low",
+  "status": "pending_review",
+  "full_url": "https://storage.googleapis.com/hmates-d052b.firebasestorage.app/evidence/full/BDEC50CA_20260621_175825_full.jpg",
+  "vehicle_url": "https://storage.googleapis.com/hmates-d052b.firebasestorage.app/evidence/vehicle/BDEC50CA_20260621_175825_vehicle.jpg",
+  "plate_url": "https://storage.googleapis.com/hmates-d052b.firebasestorage.app/evidence/plate/BDEC50CA_20260621_175825_plate.jpg"
+}
