@@ -42,7 +42,12 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Optional
 
-import cv2
+try:
+    import cv2
+    print("OpenCV loaded successfully")
+except Exception as e:
+    print("CV2 ERROR:", e)
+    raise
 import numpy as np
 from fastapi import FastAPI, File, UploadFile, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
