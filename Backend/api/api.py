@@ -145,6 +145,12 @@ app.mount(
 )
 
 
+# ── TEMP: Railway deploy verification route (remove once confirmed) ──────────
+@app.get("/")
+def root():
+    return {"status": "ok", "message": "Trinetra backend running"}
+
+
 # ── Pydantic models ───────────────────────────────────────────────────────────
 
 class ReviewRequest(BaseModel):
