@@ -548,15 +548,27 @@ def evaluate_car(c_data:       dict,
         or (s_cls.lower().startswith("no") and "seat" in s_cls.lower())
     )
 
-    print(
-        f"[SEATBELT] class={s_cls!r} "
-        f"model={s_conf:.3f} "
-        f"scene={scene_conf:.3f} "
-        f"fused={_fuse(s_conf, scene_conf):.3f} "
-        f"violation={_is_no_seatbelt}"
-    )
+    # SEATBELT DEFENCE-IN-DEPTH:
+    # car_pipeline() gates the seatbelt classifier behind Gates 0-3 (size,
+    # aspect, confidence, person-presence).  However if car_pipeline() was
+    # called in legacy/test mode (person_boxes=None), those gates are partially
+    # bypassed.  We add a final guard here: only raise a Seat Belt Violation
+    # when the scene-model confidence for the car detection is ≥ 0.15.
+    # Genuine cars typically score ≥ 0.25; the ghost detections that cause
+    # false positives are consistently ≤ 0.10.
+    # Also require that car_pipeline did NOT return a skip_reason, which it sets
+    # whenever any of its own gates fired — those results are already "clean",
+    # but a skip_reason of "low_conf_detection" or "no_visible_driver" means
+    # the seatbelt result is "unknown" / 0.0 and should never fire here anyway.
+    _skip_reason    = c_data.get("skip_reason", "")
+    _sb_gated_out   = bool(_skip_reason)          # any gate in car_pipeline fired
+    _scene_too_low  = scene_conf < 0.15           # ghost detection
 
-    if _is_no_seatbelt:
+    # NOTE: [SEATBELT] log is now emitted inside car_pipeline() (detector.py)
+    # with full context on ab_seatbelt_seen suppression. The duplicate log
+    # that used to live here has been removed — it was printing violation=True
+    # even when the pipeline had already suppressed the false positive.
+    if _is_no_seatbelt and not _sb_gated_out and not _scene_too_low:
         c = _fuse(s_conf, scene_conf)
         v = _gate("Seat Belt Violation", tid,
                   _make("Seat Belt Violation", c, plate, tid,
@@ -567,15 +579,10 @@ def evaluate_car(c_data:       dict,
     p_cls  = c_data.get("phone",      "unknown")
     p_conf = c_data.get("phone_conf", 0.0)
 
-    # BUGFIX: evaluate_bike() already gates phone detections on raw model
-    # confidence >= 0.80 before fusing (phone is the noisiest expert model).
-    # This check was missing here, so any "phone" classification — even at
-    # the _run() floor of conf=0.4 — fused down to MIN_CONFIDENCE-clearing
-    # values (~0.45-0.65) and built a Violation. It never hit the 0.92
-    # VIOLATION_CHALLAN_THRESHOLDS bar so it landed as MANUAL_REVIEW rather
-    # than AUTO_APPROVED, but it still existed — which is enough to show up
-    # in evidence/challan output that doesn't separately filter by
-    # review_status. Mirror evaluate_bike's gate here for consistency.
+    # Gate on raw model confidence >= 0.80 before fusing.
+    # car_pipeline() now fuses phone.pt + abnormal.pt "phone" signals into
+    # c_data["phone"] / c_data["phone_conf"], so p_conf here is already
+    # the best available phone signal — no need to read ab_dets separately.
     if p_cls == "phone" and p_conf >= 0.80:
         c = _fuse(p_conf, scene_conf)
         v = _gate("Mobile Usage While Driving", tid,
@@ -587,10 +594,13 @@ def evaluate_car(c_data:       dict,
     # ── Abnormal driving ─────────────────────────────────────────────────────
     ab_cls  = c_data.get("abnormal",      "normal")
     ab_conf = c_data.get("abnormal_conf", 0.0)
-    # actual abnormal.pt classes: cigarette / drinking / eating / phone / seatbelt
-    # Any of these detected = distracted/abnormal driving behaviour.
-    # "seatbelt" from abnormal model = belt issue detected; handled separately.
-    _ABNORMAL_VIOLATION_CLASSES = {"cigarette", "drinking", "eating", "phone"}
+    # car_pipeline() surfaces only cigarette / drinking / eating in
+    # c_data["abnormal"] — phone and seatbelt are consumed separately.
+    # BUGFIX: "phone" was previously included here, which issued a SECOND
+    # challan ("Abnormal Driving Behaviour") for the same event already
+    # raised above as "Mobile Usage While Driving", inflating the fine and
+    # the combined_risk score. Removed from this set.
+    _ABNORMAL_VIOLATION_CLASSES = {"cigarette", "drinking", "eating"}
     if ab_cls in _ABNORMAL_VIOLATION_CLASSES:
         c = _fuse(ab_conf, scene_conf)
         v = _gate("Abnormal Driving Behaviour", tid,

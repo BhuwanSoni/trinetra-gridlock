@@ -1,0 +1,38 @@
+{
+  "challan_id": "CHN-AB7D13BF",
+  "issued_at": "2026-06-22T14:27:50.461232",
+  "plate_number": "UNKNOWN",
+  "location": "Unknown",
+  "camera_id": "CAM-01",
+  "violations": [
+    {
+      "violation_type": "Seat Belt Violation",
+      "severity": "Medium",
+      "risk_score": 65,
+      "fine_amount": 1000,
+      "confidence": 0.862,
+      "plate_number": "UNKNOWN",
+      "track_id": -1,
+      "review_status": "AUTO_APPROVED",
+      "needs_manual_review": false,
+      "details": {
+        "detected": "no_seatbelt",
+        "model_conf": 1.0,
+        "review_status": "AUTO_APPROVED",
+        "challan_threshold": 0.85,
+        "unknown_plate": true
+      }
+    }
+  ],
+  "total_fine_inr": 1000,
+  "combined_risk": 21.9,
+  "top_severity": "Low",
+  "evidence_image": "evidence\\images\\AB7D13BF_20260622_142744_full.jpg",
+  "vehicle_crop": "evidence\\images\\AB7D13BF_20260622_142744_vehicle.jpg",
+  "plate_crop": "",
+  "full_url": "https://storage.googleapis.com/hmates-d052b.firebasestorage.app/evidence/full/AB7D13BF_20260622_142744_full.jpg",
+  "vehicle_url": "https://storage.googleapis.com/hmates-d052b.firebasestorage.app/evidence/vehicle/AB7D13BF_20260622_142744_vehicle.jpg",
+  "plate_url": "",
+  "payment_due": "30 days from issue date",
+  "status": "issued"
+}

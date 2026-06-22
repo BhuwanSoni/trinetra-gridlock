@@ -1,0 +1,56 @@
+{
+  "challan_id": "CHN-C8F7DBA4",
+  "issued_at": "2026-06-22T14:27:43.808208",
+  "plate_number": "UNKNOWN",
+  "location": "Unknown",
+  "camera_id": "CAM-01",
+  "violations": [
+    {
+      "violation_type": "Helmet Violation",
+      "severity": "Medium",
+      "risk_score": 70,
+      "fine_amount": 1000,
+      "confidence": 0.79,
+      "plate_number": "UNKNOWN",
+      "track_id": -1,
+      "review_status": "MANUAL_REVIEW",
+      "needs_manual_review": true,
+      "details": {
+        "detected": "no_helmet",
+        "model_conf": 0.764,
+        "review_status": "MANUAL_REVIEW",
+        "challan_threshold": 0.83,
+        "unknown_plate": true
+      }
+    },
+    {
+      "violation_type": "Triple Riding",
+      "severity": "High",
+      "risk_score": 85,
+      "fine_amount": 1000,
+      "confidence": 0.906,
+      "plate_number": "UNKNOWN",
+      "track_id": -1,
+      "review_status": "MANUAL_REVIEW",
+      "needs_manual_review": true,
+      "details": {
+        "detected": "triple_rider",
+        "model_conf": 0.918,
+        "review_status": "MANUAL_REVIEW",
+        "challan_threshold": 0.88,
+        "unknown_plate": true
+      }
+    }
+  ],
+  "total_fine_inr": 2000,
+  "combined_risk": 42.4,
+  "top_severity": "Medium",
+  "evidence_image": "evidence\\images\\C8F7DBA4_20260622_142732_full.jpg",
+  "vehicle_crop": "evidence\\images\\C8F7DBA4_20260622_142732_vehicle.jpg",
+  "plate_crop": "evidence\\images\\C8F7DBA4_20260622_142732_plate.jpg",
+  "full_url": "https://storage.googleapis.com/hmates-d052b.firebasestorage.app/evidence/full/C8F7DBA4_20260622_142732_full.jpg",
+  "vehicle_url": "https://storage.googleapis.com/hmates-d052b.firebasestorage.app/evidence/vehicle/C8F7DBA4_20260622_142732_vehicle.jpg",
+  "plate_url": "https://storage.googleapis.com/hmates-d052b.firebasestorage.app/evidence/plate/C8F7DBA4_20260622_142732_plate.jpg",
+  "payment_due": "30 days from issue date",
+  "status": "issued"
+}

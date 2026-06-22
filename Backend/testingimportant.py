@@ -3,7 +3,7 @@ import cv2
 
 model = YOLO(r"E:\traffic_ai\Backend\detectors\models\seatbelt.pt")
 
-img = cv2.imread(r"E:\traffic_ai\Backend\debug_api_input.jpg")
+img = cv2.imread(r"E:\Downloads\traffic-police-on-mobile-usage.webp")
 
 results = model(
     img,

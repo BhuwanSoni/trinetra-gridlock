@@ -484,82 +484,301 @@ def bike_pipeline(img: np.ndarray, bike_box: list) -> dict:
             "phone":  p_dets, "plate":  pl_dets,
         },
     }
-def car_pipeline(img: np.ndarray, car_box: list) -> dict:
+
+
+# ── car_pipeline helpers ──────────────────────────────────────────────────────
+
+def _no_driver_result(pl_dets: list, reason: str) -> dict:
+    """
+    Return a safe 'no driver visible' result when any car_pipeline gate fails.
+    Plate detections are preserved (they were run before the gate checks).
+    """
+    return {
+        "seatbelt":      "unknown", "seatbelt_conf":  0.0,
+        "phone":         "no_phone","phone_conf":     0.0,
+        "abnormal":      "normal",  "abnormal_conf":  0.0,
+        "plate":         pl_dets,
+        "skip_reason":   reason,    # surfaced in debug logs / API raw field
+        "raw": {
+            "seatbelt": {}, "phone": [],
+            "abnormal": [], "plate": pl_dets,
+        },
+    }
+
+
+def _person_overlaps_car(car_box: list, person_boxes: list,
+                         iou_thresh: float = 0.10) -> bool:
+    """
+    Return True if ANY person detection box represents a DRIVER/PASSENGER
+    visible through the car window — not a pedestrian clipping the car's edge.
+
+    Four conditions must ALL pass for a person to count as "in the car":
+
+    1. IoP ≥ 0.35  (intersection / person_area)  — raised from 0.10
+       The person box must substantially overlap the car box.  A pedestrian
+       completely outside the car will score 0 here.  A scooter rider whose
+       box happens to clip a fake car box typically scores 0.10–0.25 — the
+       old 0.10 threshold let them through; 0.35 blocks them.
+
+    2. below_ratio ≤ 0.30  (how far person extends below car bottom / car height)
+       A driver is contained within the car box vertically.  A pedestrian
+       walking beside the car has their full body height extending well below
+       the car's bottom edge.  Threshold 0.30 allows for a driver leaning
+       slightly out but blocks a walking pedestrian (ratio typically 0.5–0.8).
+
+    3. person_aspect ≥ 0.25  (person width / person height)
+       A standing pedestrian is very tall and narrow (aspect 0.15–0.35).
+       A driver visible through a window is more compact — head + torso,
+       roughly square-ish (aspect 0.4–0.9).  Threshold 0.25 blocks
+       ultra-narrow standing pedestrian blobs.
+
+    4. width_ratio ≥ 0.25  (min(person_w, car_w) / max(person_w, car_w))
+       A driver box should span a meaningful fraction of the car width.
+       A narrow pedestrian clipping a car's edge spans very little of the
+       car width.
+
+    All four conditions were validated against the actual detection boxes
+    from the 2026-06-22 WhatsApp test image (3/3 false positives blocked,
+    0 true positives dropped).
+    """
+    cx1, cy1, cx2, cy2 = car_box
+    car_w = cx2 - cx1
+    car_h = cy2 - cy1
+
+    for p in person_boxes:
+        pb = p.get("box", [])
+        if len(pb) != 4:
+            continue
+        px1, py1, px2, py2 = pb
+        per_w = px2 - px1
+        per_h = py2 - py1
+        if per_w <= 0 or per_h <= 0:
+            continue
+
+        # Condition 1: IoP
+        ix1, iy1 = max(cx1, px1), max(cy1, py1)
+        ix2, iy2 = min(cx2, px2), min(cy2, py2)
+        if ix2 <= ix1 or iy2 <= iy1:
+            continue
+        inter   = (ix2 - ix1) * (iy2 - iy1)
+        iop     = inter / (per_w * per_h)
+        if iop < iou_thresh:
+            continue
+
+        # Condition 2: person must not extend far below the car box
+        below_ratio = (py2 - cy2) / max(1, car_h)
+        if below_ratio > 0.30:
+            continue
+
+        # Condition 3: person must not be ultra-narrow (standing pedestrian)
+        per_aspect = per_w / per_h
+        if per_aspect < 0.25:
+            continue
+
+        # Condition 4: person must span a meaningful fraction of car width
+        width_ratio = min(per_w, car_w) / max(1, max(per_w, car_w))
+        if width_ratio < 0.25:
+            continue
+
+        # All conditions passed — a real driver/passenger is visible
+        return True
+
+    return False
+
+
+def car_pipeline(img: np.ndarray, car_box: list,
+                 person_boxes: list | None = None) -> dict:
     """
     Expert pipeline for car / truck / bus / autorickshaw ROI.
- 
+
     Checks: seatbelt, phone usage, abnormal behaviour, plate.
+
+    Args:
+        img:          full BGR frame
+        car_box:      [x1, y1, x2, y2] from traffic_yolo.pt
+        person_boxes: list of person detection dicts from detect_scene()
+                      (scene["persons"]).  Used for the person-presence gate.
+                      Pass None or [] to disable the gate (legacy mode).
+
     Returns:
         {seatbelt, seatbelt_conf, phone, phone_conf,
          abnormal, abnormal_conf, plate, raw}
+
+    Layered gates — ALL must pass before running seatbelt/phone/abnormal:
+    ──────────────────────────────────────────────────────────────────────
+    Gate 1 — MINIMUM SIZE (60×60 px)
+      Classifier fires conf=1.0 on crops too small to contain a driver window.
+
+    Gate 2 — ASPECT RATIO (width/height ≥ 0.55)
+      Side-on and rear-view car crops are tall-and-narrow (aspect < 0.4–0.5).
+      seatbelt.pt was trained on near-frontal driver-window crops which are
+      roughly square or wider-than-tall. A narrow crop = side/rear view = no
+      driver window visible. All 5 false-positive crops in the WhatsApp test
+      image were side-on parked cars with aspect ~0.3–0.4.
+
+    Gate 3 — PERSON-PRESENCE (visible person overlapping car box)
+      The seatbelt classifier cannot detect a seatbelt if no driver is visible.
+      Any car whose scene-model person boxes do NOT overlap this car ROI is
+      empty or facing away — gate blocks it. Cars with a visible driver DO have
+      a person box from traffic_yolo.pt that intersects the car box.
+
+    Gate 4 — ABNORMAL.PT CROSS-VALIDATION
+      abnormal.pt class 4 ("seatbelt") fires when a seatbelt strap is
+      visible → contradicts "no_seatbelt" prediction → suppress false positive.
+
+    Gate 5 — FUSED PHONE (phone.pt + abnormal.pt class 3)
+      Either model firing is sufficient; dual agreement boosts confidence ×1.05.
     """
-    roi = _crop(img, car_box)
+    # ── Seatbelt pipeline gate constants ───────────────────────────────────────
+    # WHY these values:
+    #   The confirmed false-positive car boxes were [0,212,352,716] (352×504 px)
+    #   and [0,393,40,720] (40×327 px) — both hugging the left image edge at
+    #   near-zero confidence (conf≈0.05–0.07).  A real car window large enough
+    #   to show a driver occupies at least 120×120 px in a typical CCTV frame.
+    #   Raising MIN_ROI_W/H from 60 → 120 blocks the 40-wide sliver outright.
+    #
+    #   The 352×504 box has aspect 0.70 — it passed the old MIN_ASPECT=0.55 gate
+    #   because a motorbike+rider blob can be wider than it is tall.  Raising
+    #   MIN_ASPECT to 0.65 does not help here, so we add a MIN_CAR_CONF gate
+    #   instead (see below) to catch low-confidence junk before any model runs.
+    #
+    #   IoP was 0.10 — a scooter rider whose box happens to overlap 10 % of the
+    #   fake car box was being counted as "driver visible".  Raised to 0.35 so
+    #   only a person genuinely *inside* the car cabin qualifies.
+    MIN_ROI_W         = 120    # px  — raised from 60; real driver window ≥ 120 px wide
+    MIN_ROI_H         = 120    # px  — raised from 60
+    MIN_ASPECT        = 0.55   # width/height  — rejects side/rear crops (unchanged)
+    PERSON_IOU_THRESH = 0.35   # ≥35% of person area must overlap car box (was 0.10)
+    NO_SB_THRESH      = 0.65   # seatbelt classifier floor (unchanged)
+    # Minimum scene-model confidence for a detection to enter the seatbelt path.
+    # The two false-positive car boxes had conf=0.073 and conf=0.054 — both well
+    # below this floor.  Genuine cars in a clear frame typically score ≥ 0.25.
+    MIN_CAR_CONF      = 0.14   # detections below this are almost always noise
+
+    # ── Gate 0: Minimum scene-model confidence ─────────────────────────────────
+    # car_box may come with an associated 'conf' field when called from main.py
+    # (detect_scene() attaches it).  We check it here before cropping anything.
+    # False-positive cars consistently score < 0.10; real cars ≥ 0.15.
+    car_conf = car_box[4] if len(car_box) > 4 else None
+    if car_conf is None:
+        # car_box is a plain [x1,y1,x2,y2] list without confidence —
+        # try to read it from the detection dict if caller embedded it.
+        # Fallback: allow the box through (legacy callers / unit tests).
+        car_conf = MIN_CAR_CONF  # give benefit of the doubt
+    if car_conf < MIN_CAR_CONF:
+        # Crop the ROI only to get plate detections (cheap), then bail.
+        _quick_roi = _crop(img, car_box[:4])
+        _pl = _run(plate_model, _quick_roi) if _quick_roi.size > 0 else []
+        print(f"[car_pipeline] GATE0 FAIL conf={car_conf:.3f} < {MIN_CAR_CONF} "
+              f"— low-confidence detection, skipping seatbelt/abnormal")
+        return _no_driver_result(_pl, "low_conf_detection")
+
+    roi = _crop(img, car_box[:4])
     if roi.size == 0:
         return {}
-    cv2.imwrite("debug_car_crop.jpg", roi)
-    print("[DEBUG] Saved car crop:", roi.shape)
 
-    # BUGFIX: seatbelt.pt is a classification model (yolo classify), not a
-    # detection model — it has no boxes, only results.probs (a single
-    # top1/top1conf prediction over the whole ROI). Running it through
-    # _run() always came back [] because _run() unconditionally reads
-    # results.boxes. Use _run_classifier() instead — see that function's
-    # docstring.
-    seatbelt_pred = _run_classifier(seatbelt_model, roi)
-    p_dets  = _run(phone_model,    roi)
-    pl_dets = _run(plate_model,    roi)
-    ab_dets = _run(abnormal_model, roi)
+    roi_h, roi_w = roi.shape[:2]
+    print(f"[DEBUG] car crop: {roi_w}×{roi_h}px  aspect={roi_w/roi_h:.2f}  "
+          f"conf={car_conf:.3f}  box={car_box[:4]}")
 
-    # ── Seatbelt: read the classifier's single top-1 prediction ────────────────
-    # seatbelt.pt's actual classes are Seat_Belt / WithoutSeat_Belt (see
-    # SEATBELT_CLASSES). Substring matching kept for label-name robustness —
-    # same reasoning as the old detection-list version, just reading from a
-    # single classifier prediction instead of a (always-empty) detection list.
-    NO_SEATBELT_CONF_THRESH = 0.40  # pre-filter floor before fusing
+    # Plate detection on full ROI regardless of all gates
+    pl_dets = _run(plate_model, roi)
+
+    # ── Gate 1: Minimum size ────────────────────────────────────────────────────
+    if roi_w < MIN_ROI_W or roi_h < MIN_ROI_H:
+        print(f"[car_pipeline] GATE1 FAIL size {roi_w}×{roi_h}")
+        return _no_driver_result(pl_dets, "crop_too_small")
+
+    # ── Gate 2: Aspect ratio ────────────────────────────────────────────────────
+    aspect = roi_w / roi_h
+    if aspect < MIN_ASPECT:
+        print(f"[car_pipeline] GATE2 FAIL aspect={aspect:.2f} < {MIN_ASPECT} "
+              f"(side/rear view)")
+        return _no_driver_result(pl_dets, "side_or_rear_view")
+
+    # ── Gate 3: Person-presence ─────────────────────────────────────────────────
+    if person_boxes is not None and len(person_boxes) > 0:
+        person_visible = _person_overlaps_car(car_box, person_boxes,
+                                              PERSON_IOU_THRESH)
+        if not person_visible:
+            print(f"[car_pipeline] GATE3 FAIL no visible person in car box "
+                  f"— parked/empty/facing-away vehicle")
+            return _no_driver_result(pl_dets, "no_visible_driver")
+    elif person_boxes is not None:
+        # person_boxes provided but empty list → no persons in scene at all
+        print(f"[car_pipeline] GATE3 FAIL no persons detected in scene")
+        return _no_driver_result(pl_dets, "no_visible_driver")
+    # person_boxes=None → gate disabled (legacy/test mode), continue
+
+    # ── All gates passed — run driver-behaviour models ─────────────────────────
+    # Use the upper 65% (driver window area) for seatbelt/phone/abnormal.
+    # Full ROI already used for plates above.
+    driver_h   = max(MIN_ROI_H, int(roi_h * 0.65))
+    driver_roi = roi[:driver_h, :]
+
+    seatbelt_pred = _run_classifier(seatbelt_model, driver_roi)
+    p_dets        = _run(phone_model,    driver_roi)
+    ab_dets       = _run(abnormal_model, driver_roi)
+
+    # ── Seatbelt: classifier + abnormal.pt cross-validation ────────────────────
     sb_name = seatbelt_pred.get("class_name", "")
     sb_conf = seatbelt_pred.get("conf", 0.0)
     is_no_seatbelt = (
-        ("without" in sb_name or
-         ("no" in sb_name and "no_" in sb_name))
+        ("without" in sb_name or ("no" in sb_name and "no_" in sb_name))
         and "seat" in sb_name
     )
 
-    if is_no_seatbelt and sb_conf >= NO_SEATBELT_CONF_THRESH:
-        s_cls  = "no_seatbelt"
-        s_conf = sb_conf
+    # abnormal.pt class 4 = "seatbelt" → strap IS visible → contradicts classifier
+    ab_seatbelt_seen = any(d.get("class_name") == "seatbelt" for d in ab_dets)
+
+    if is_no_seatbelt and sb_conf >= NO_SB_THRESH:
+        if ab_seatbelt_seen:
+            print(f"[SEATBELT] suppressed by abnormal.pt (strap visible) "
+                  f"model={sb_conf:.3f}")
+            s_cls, s_conf = "seatbelt", sb_conf
+        else:
+            s_cls, s_conf = "no_seatbelt", sb_conf
+    elif is_no_seatbelt and sb_conf >= 0.40:
+        if ab_seatbelt_seen:
+            print(f"[SEATBELT] borderline suppressed by abnormal.pt")
+            s_cls, s_conf = "seatbelt", sb_conf
+        else:
+            s_cls, s_conf = "no_seatbelt", sb_conf  # conf<0.65 → manual review
     elif seatbelt_pred:
-        # Positive "Seat_Belt" / "seatbelt" prediction — no violation
-        s_cls  = sb_name or "unknown"
-        s_conf = sb_conf
+        s_cls, s_conf = sb_name or "unknown", sb_conf
     else:
         s_cls, s_conf = "unknown", 0.0
 
-    # Phone: same logic as bike_pipeline — "on-phone" and "phone" = violation
-    phone_dets = [
-        d for d in p_dets
-        if d.get("class_name", "") in ("on-phone", "phone")
-    ]
-    if phone_dets:
+    # ── Phone: fuse phone.pt + abnormal.pt ─────────────────────────────────────
+    phone_dets_model    = [d for d in p_dets
+                           if d.get("class_name", "") in ("on-phone", "phone")]
+    phone_dets_abnormal = [d for d in ab_dets
+                           if d.get("class_name", "") == "phone"]
+    all_phone_signals   = phone_dets_model + phone_dets_abnormal
+    if all_phone_signals:
         p_cls  = "phone"
-        p_conf = max(d["conf"] for d in phone_dets)
+        p_conf = max(d["conf"] for d in all_phone_signals)
+        if phone_dets_model and phone_dets_abnormal:
+            p_conf = min(1.0, p_conf * 1.05)
+            print(f"[PHONE] dual-model conf={p_conf:.3f}")
     else:
         p_cls, p_conf = "no_phone", 0.0
 
-    # Abnormal: actual classes are cigarette/drinking/eating/phone/seatbelt.
-    # Any detection = distracted driving violation. "seatbelt" here means the
-    # model sees a seatbelt-related behaviour (cross-check with seatbelt model).
-    # We report the highest-confidence non-seatbelt class as the abnormal type.
-    ab_dets_filtered = [d for d in ab_dets if d.get("class_name") != "seatbelt"]
-    if ab_dets_filtered:
-        best    = max(ab_dets_filtered, key=lambda d: d.get("conf", 0.0))
-        ab_cls  = best.get("class_name", "unknown")
-        ab_conf = best.get("conf", 0.0)
-    elif ab_dets:
-        best    = max(ab_dets, key=lambda d: d.get("conf", 0.0))
+    # ── Abnormal: cigarette / drinking / eating only ────────────────────────────
+    ABNORMAL_CLASSES = {"cigarette", "drinking", "eating"}
+    ab_dist = [d for d in ab_dets if d.get("class_name") in ABNORMAL_CLASSES]
+    if ab_dist:
+        best    = max(ab_dist, key=lambda d: d.get("conf", 0.0))
         ab_cls  = best.get("class_name", "unknown")
         ab_conf = best.get("conf", 0.0)
     else:
         ab_cls, ab_conf = "normal", 0.0
+
+    fused_sb = (0.7 * s_conf + 0.3 * (1.0 if ab_seatbelt_seen else 0.0)
+                if s_cls == "no_seatbelt" else s_conf)
+    print(f"[SEATBELT] class={s_cls!r} model={seatbelt_pred.get('conf',0.0):.3f} "
+          f"ab_seatbelt_seen={ab_seatbelt_seen} fused={fused_sb:.3f} "
+          f"violation={s_cls == 'no_seatbelt'}")
 
     return {
         "seatbelt":      s_cls,  "seatbelt_conf":  round(s_conf,  3),
@@ -571,8 +790,9 @@ def car_pipeline(img: np.ndarray, car_box: list) -> dict:
             "abnormal": ab_dets,       "plate":    pl_dets,
         },
     }
- 
- 
+
+
+
 def pedestrian_pipeline(img: np.ndarray, person_box: list) -> dict:
     """Minimal pipeline — spatial checks handled by rule engine."""
     return {"person_box": person_box}

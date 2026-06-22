@@ -224,8 +224,15 @@ def process_frame(img: np.ndarray,
                 scene.get("buses", []) + scene.get("autorickshaws", [])):
         tid        = det.get("track_id", -1)
         trajectory = det.get("trajectory", [])
-        c_data     = car_pipeline(raw_img, det["box"])
         scene_conf = det.get("conf", 0.8)
+
+        # Pass the scene-model confidence as a 5th element of the box so
+        # car_pipeline's Gate 0 can reject low-confidence detections before
+        # running any expert model.  car_pipeline() uses box[:4] for all
+        # geometric operations so existing callers are unaffected.
+        box_with_conf = det["box"] + [scene_conf]
+        c_data     = car_pipeline(raw_img, box_with_conf,
+                                   person_boxes=scene["persons"])
 
         stationary, frames_stat = (
             is_stationary(tid, trajectory) if tid >= 0 else (False, 0)
