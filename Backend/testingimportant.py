@@ -1,9 +1,9 @@
 from ultralytics import YOLO
 import cv2
 
-model = YOLO(r"E:\traffic_ai\Backend\detectors\models\seatbelt.pt")
+model = YOLO(r"E:\traffic_ai\Backend\detectors\models\helmet.pt")
 
-img = cv2.imread(r"E:\Downloads\traffic-police-on-mobile-usage.webp")
+img = cv2.imread(r"E:\Downloads\50 photos\pexels-khoa-le-1920596591-31180327.jpg")
 
 results = model(
     img,

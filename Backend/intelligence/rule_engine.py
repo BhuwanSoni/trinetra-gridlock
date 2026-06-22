@@ -416,6 +416,10 @@ def evaluate_bike(b_data:      dict,
     # ── Helmet  (⑧ delegates to helmet_detector for cleaner separation) ──────
     h_cls  = b_data.get("helmet",      "unknown")
     h_conf = b_data.get("helmet_conf", 0.0)
+    # Only raise a violation when detector.py's risk-score logic has committed
+    # to "no_helmet". "uncertain" and "helmet" must never generate a challan —
+    # "uncertain" means both helmet and no-helmet detections exist but neither
+    # dominates by enough margin (e.g. Helmet 0.42, No-Helmet 0.39).
     if h_cls == "no_helmet":
         c = _fuse(h_conf, scene_conf)
         print(
@@ -428,6 +432,8 @@ def evaluate_bike(b_data:      dict,
                   _make("Helmet Violation", c, plate, tid,
                         {"detected": h_cls, "model_conf": h_conf}))
         if v: violations.append(v)
+    else:
+        print(f"[HELMET] SKIP challan — status={h_cls!r}  conf={h_conf:.2f}")
 
     # ── Triple riding  (⑧) ──────────────────────────────────────────────────
     t_cls  = b_data.get("triple_riding", "unknown")

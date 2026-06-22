@@ -1,0 +1,38 @@
+{
+  "record_id": "7738B1EA",
+  "timestamp": "2026-06-23T01:18:55.636849",
+  "camera_id": "CAM-01",
+  "location": "Unknown",
+  "track_id": -1,
+  "plate_number": "UNKNOWN",
+  "image_path": "evidence\\images\\7738B1EA_20260623_011855_full.jpg",
+  "vehicle_crop": "evidence\\images\\7738B1EA_20260623_011855_vehicle.jpg",
+  "plate_crop": "",
+  "violations": [
+    {
+      "violation_type": "Helmet Violation",
+      "severity": "Medium",
+      "risk_score": 70,
+      "fine_amount": 1000,
+      "confidence": 0.531,
+      "plate_number": "UNKNOWN",
+      "track_id": -1,
+      "review_status": "MANUAL_REVIEW",
+      "needs_manual_review": true,
+      "details": {
+        "detected": "no_helmet",
+        "model_conf": 0.584,
+        "review_status": "MANUAL_REVIEW",
+        "challan_threshold": 0.83,
+        "unknown_plate": true
+      }
+    }
+  ],
+  "total_fine": 1000,
+  "combined_risk": 31.8,
+  "top_severity": "Low",
+  "status": "pending_review",
+  "full_url": "https://storage.googleapis.com/hmates-d052b.firebasestorage.app/evidence/full/7738B1EA_20260623_011855_full.jpg",
+  "vehicle_url": "https://storage.googleapis.com/hmates-d052b.firebasestorage.app/evidence/vehicle/7738B1EA_20260623_011855_vehicle.jpg",
+  "plate_url": ""
+}

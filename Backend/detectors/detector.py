@@ -442,23 +442,52 @@ def bike_pipeline(img: np.ndarray, bike_box: list) -> dict:
     pl_dets = _run(plate_model,  roi)
 
     # Helmet: model classes are "helmet" (0), "no-helmet" (1), "person" (2)
-    # after _run() normalisation. Match "no-helmet" or any "no"+"helmet" variant.
-    NO_HELMET_CONF_THRESH = 0.40
+    # after _run() normalisation.
+    #
+    # BUGFIX: old logic checked only whether any no-helmet box existed above
+    # a flat threshold — it never compared against helmet confidence. When the
+    # model detects both "Helmet 0.68" and "No-Helmet 0.39" on the same rider,
+    # the old code returned no_helmet and generated a false challan.
+    #
+    # New logic — risk-score comparison:
+    #   risk = nohelmet_conf - helmet_conf
+    #   risk > +0.25  → no_helmet  (clear violation)
+    #   risk < -0.25  → helmet     (clear safe)
+    #   else          → uncertain  (skip, don't generate challan)
+    #
+    # Additionally require nohelmet_conf > 0.40 OR nohelmet dominates helmet
+    # by a 1.5× margin before flagging — prevents tiny no-helmet blips from
+    # winning when both confidences are near-zero.
+
+    helmet_dets = [
+        d for d in h_dets
+        if "helmet" in d.get("class_name", "")
+        and "no" not in d.get("class_name", "")
+    ]
     no_helmet_dets = [
         d for d in h_dets
-        if ("no" in d.get("class_name", "") and "helmet" in d.get("class_name", ""))
-        and d.get("conf", 0.0) >= NO_HELMET_CONF_THRESH
+        if "no" in d.get("class_name", "") and "helmet" in d.get("class_name", "")
     ]
 
-    if no_helmet_dets:
+    helmet_conf_best    = max((d["conf"] for d in helmet_dets),    default=0.0)
+    no_helmet_conf_best = max((d["conf"] for d in no_helmet_dets), default=0.0)
+
+    risk = no_helmet_conf_best - helmet_conf_best
+
+    print(f"[HELMET] helmet={helmet_conf_best:.3f}  "
+          f"no_helmet={no_helmet_conf_best:.3f}  risk={risk:+.3f}")
+
+    if risk > 0.25 and (no_helmet_conf_best > 0.40 or
+                        no_helmet_conf_best > helmet_conf_best * 1.5):
         h_cls  = "no_helmet"
-        h_conf = max(d["conf"] for d in no_helmet_dets)
-    elif h_dets:
-        best   = max(h_dets, key=lambda d: d.get("conf", 0.0))
-        h_cls  = best.get("class_name", "unknown")
-        h_conf = best.get("conf", 0.0)
+        h_conf = no_helmet_conf_best
+    elif risk < -0.25 or helmet_conf_best >= 0.50:
+        h_cls  = "helmet"
+        h_conf = helmet_conf_best
     else:
-        h_cls, h_conf = "unknown", 0.0
+        # Ambiguous — do not generate challan
+        h_cls  = "uncertain"
+        h_conf = max(helmet_conf_best, no_helmet_conf_best)
 
     t_cls, t_conf = _top(t_dets, TRIPLE_CLASSES)
 
