@@ -1,0 +1,38 @@
+{
+  "challan_id": "CHN-31702474",
+  "issued_at": "2026-06-23T00:30:26.300395",
+  "plate_number": "UNKNOWN",
+  "location": "Unknown",
+  "camera_id": "CAM-01",
+  "violations": [
+    {
+      "violation_type": "Seat Belt Violation",
+      "severity": "Medium",
+      "risk_score": 65,
+      "fine_amount": 1000,
+      "confidence": 0.8,
+      "plate_number": "UNKNOWN",
+      "track_id": -1,
+      "review_status": "MANUAL_REVIEW",
+      "needs_manual_review": true,
+      "details": {
+        "detected": "no_seatbelt",
+        "model_conf": 1.0,
+        "review_status": "MANUAL_REVIEW",
+        "challan_threshold": 0.85,
+        "unknown_plate": true
+      }
+    }
+  ],
+  "total_fine_inr": 1000,
+  "combined_risk": 27.2,
+  "top_severity": "Low",
+  "evidence_image": "evidence\\images\\31702474_20260623_003006_full.jpg",
+  "vehicle_crop": "evidence\\images\\31702474_20260623_003006_vehicle.jpg",
+  "plate_crop": "evidence\\images\\31702474_20260623_003006_plate.jpg",
+  "full_url": "https://storage.googleapis.com/hmates-d052b.firebasestorage.app/evidence/full/31702474_20260623_003006_full.jpg",
+  "vehicle_url": "https://storage.googleapis.com/hmates-d052b.firebasestorage.app/evidence/vehicle/31702474_20260623_003006_vehicle.jpg",
+  "plate_url": "https://storage.googleapis.com/hmates-d052b.firebasestorage.app/evidence/plate/31702474_20260623_003006_plate.jpg",
+  "payment_due": "30 days from issue date",
+  "status": "issued"
+}

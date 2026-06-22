@@ -1,0 +1,38 @@
+{
+  "challan_id": "CHN-00A171CB",
+  "issued_at": "2026-06-23T00:29:51.951734",
+  "plate_number": "UNKNOWN",
+  "location": "Unknown",
+  "camera_id": "CAM-01",
+  "violations": [
+    {
+      "violation_type": "No Entry Violation",
+      "severity": "Critical",
+      "risk_score": 88,
+      "fine_amount": 5000,
+      "confidence": 0.416,
+      "plate_number": "UNKNOWN",
+      "track_id": -1,
+      "review_status": "MANUAL_REVIEW",
+      "needs_manual_review": true,
+      "details": {
+        "sign_conf": 0.438,
+        "sign": "no_entry",
+        "review_status": "MANUAL_REVIEW",
+        "challan_threshold": 0.88,
+        "unknown_plate": true
+      }
+    }
+  ],
+  "total_fine_inr": 5000,
+  "combined_risk": 29.3,
+  "top_severity": "Low",
+  "evidence_image": "evidence\\images\\00A171CB_20260623_002936_full.jpg",
+  "vehicle_crop": "evidence\\images\\00A171CB_20260623_002936_vehicle.jpg",
+  "plate_crop": "",
+  "full_url": "https://storage.googleapis.com/hmates-d052b.firebasestorage.app/evidence/full/00A171CB_20260623_002936_full.jpg",
+  "vehicle_url": "https://storage.googleapis.com/hmates-d052b.firebasestorage.app/evidence/vehicle/00A171CB_20260623_002936_vehicle.jpg",
+  "plate_url": "",
+  "payment_due": "30 days from issue date",
+  "status": "issued"
+}

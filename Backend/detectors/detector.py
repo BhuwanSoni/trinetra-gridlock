@@ -698,7 +698,7 @@ def car_pipeline(img: np.ndarray, car_box: list,
 
     # ── Gate 3: Person-presence ─────────────────────────────────────────────────
     if person_boxes is not None and len(person_boxes) > 0:
-        person_visible = _person_overlaps_car(car_box, person_boxes,
+        person_visible = _person_overlaps_car(car_box[:4], person_boxes,
                                               PERSON_IOU_THRESH)
         if not person_visible:
             print(f"[car_pipeline] GATE3 FAIL no visible person in car box "
